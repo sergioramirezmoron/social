@@ -13,7 +13,12 @@
                 <p><img src="{{ asset('img/' ~ post.img)}}" alt"{{post.img}}" width="200px"></p>
                 {% endif %}
                 <div>
-                    <a href="{{ path('app_post_like', {'id': post.id}) }}">❤️</a>
+                {{ post.likes|length }}
+                {% if app.user.likes.contains(post) %}
+                    <a href="{{ path('app_post_dislike', {'id': post.id}) }}">❤️</a>
+                    {% else %}
+                    <a href="{{ path('app_post_like', {'id': post.id}) }}">🩶</a>
+                {% endif %}
                     <a href="{{ path('app_post_show', {'id': post.id}) }}">show</a>
                     <a href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
                 </div>
