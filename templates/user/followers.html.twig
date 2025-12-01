@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Followers{% endblock %}
+
+{% block body %}
+    <h1>Followers de {{ user.username }}</h1>
+
+    <p>Total: {{ followers|length }}</p>
+
+    <ul>
+        {% for follower in followers %}
+            <li>
+                <a href="{{ path('app_user_show', {'id': follower.id}) }}">{{ follower.username }}</a>
+            </li>
+        {% else %}
+            <li>No tiene followers todavía.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ path('app_user_show', {'id': user.id}) }}">Volver al perfil</a>
+{% endblock %}
+
+

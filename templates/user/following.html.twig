@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Following{% endblock %}
+
+{% block body %}
+    <h1>Siguiendo a (followings) de {{ user.username }}</h1>
+
+    <p>Total: {{ following|length }}</p>
+
+    <ul>
+        {% for followed in following %}
+            <li>
+                <a href="{{ path('app_user_show', {'id': followed.id}) }}">{{ followed.username }}</a>
+            </li>
+        {% else %}
+            <li>No está siguiendo a nadie todavía.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ path('app_user_show', {'id': user.id}) }}">Volver al perfil</a>
+{% endblock %}
+
+

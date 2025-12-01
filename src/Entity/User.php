@@ -48,10 +48,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'likes')]
     private Collection $likes;
 
+    /**
+     * Usuarios que siguen a este usuario.
+     *
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'following')]
+    private Collection $followers;
+
+    /**
+     * Usuarios a los que este usuario sigue (lado propietario).
+     *
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'followers')]
+    #[ORM\JoinTable(name: 'user_following')]
+    private Collection $following;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->likes = new ArrayCollection();
+        $this->followers = new ArrayCollection();
+        $this->following = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -187,6 +206,59 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->likes->removeElement($like)) {
             $like->removeLike($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getFollowers(): Collection
+    {
+        return $this->followers;
+    }
+
+    public function addFollower(self $follower): static
+    {
+        $follower->addFollowing($this);
+
+        return $this;
+    }
+
+    public function removeFollower(self $follower): static
+    {
+        $follower->removeFollowing($this);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getFollowing(): Collection
+    {
+        return $this->following;
+    }
+
+    public function addFollowing(self $following): static
+    {
+        if ($following === $this) {
+            return $this;
+        }
+
+        if (!$this->following->contains($following)) {
+            $this->following->add($following);
+            $following->followers->add($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFollowing(self $following): static
+    {
+        if ($this->following->removeElement($following)) {
+            $following->followers->removeElement($this);
         }
 
         return $this;

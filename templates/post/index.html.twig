@@ -7,10 +7,18 @@
 
         {% for post in posts %}
         <div>
-                <p>{{ post.author.username }} ({{ post.postdate ? post.postdate|date('Y-m-d H:i:s') : '' }})</p>
+        {% if post.author is not same as app.user %}
+            {% if not post.author.getFollowers().contains(app.user) %}
+            <a href="{{ path('app_post_follow', {'id': post.author.id}) }}">Follow</a>
+            {% else %}
+            <a href="{{ path('app_post_unfollow', {'id': post.author.id}) }}">UnFollow</a>
+            {% endif %}
+        {% endif %}
+                <a href="{{ path('app_user_show', {'id': post.author.id})}}">{{ post.author.username }}</a>
+                <p>({{ post.postdate ? post.postdate|date('Y-m-d H:i:s') : '' }})</p>
                 <p>{{ post.text }}</p>
                 {% if post.img %}
-                <p><img src="{{ asset('img/' ~ post.img)}}" alt"{{post.img}}" width="200px"></p>
+                <p><img src="{{ asset('img/' ~ post.img)}}" alt="{{post.img}}" width="200px"></p>
                 {% endif %}
                 <div>
                 {{ post.likes|length }}
@@ -27,8 +35,6 @@
         {% else %}
                 <p colspan="5">no records found</p>
         {% endfor %}
-        </tbody>
-    </table>
 
     <a href="{{ path('app_post_new') }}">Create new</a>
 {% endblock %}

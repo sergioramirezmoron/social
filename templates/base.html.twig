@@ -15,6 +15,9 @@
     {% if is_granted('ROLE_USER') %}
                     <a href="{{ path('app_post_index') }}">Inicio</a>
                     <a href="{{ path('app_post_new') }}">Crear</a>
+                    <a href="{{ path('app_user_show', {'id': app.user.id})}}">Perfil</a>
+                    <a href="{{ path('app_user_followers', {'id': app.user.id}) }}">Mis followers</a>
+                    <a href="{{ path('app_user_following', {'id': app.user.id}) }}">A quién sigo</a>
                     <a href="{{ path('app_logout') }}">Salir</a>
                 {% else %}
                     <a href="{{ path('app_login') }}">Entrar</a>
