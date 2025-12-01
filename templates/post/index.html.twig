@@ -14,8 +14,8 @@
                 {% endif %}
                 <div>
                 {{ post.likes|length }}
-                {% if app.user.likes.contains(post) %}
-                    <a href="{{ path('app_post_dislike', {'id': post.id}) }}">❤️</a>
+                {% if post.likes.contains(app.user) %}
+                    <a href="{{ path('app_post_unlike', {'id': post.id}) }}">❤️</a>
                     {% else %}
                     <a href="{{ path('app_post_like', {'id': post.id}) }}">🩶</a>
                 {% endif %}

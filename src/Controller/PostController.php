@@ -113,8 +113,8 @@ final class PostController extends AbstractController
         return $this->redirectToRoute('app_post_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/dislike/{id}', name: 'app_post_dislike', methods: ['GET'])]
-    public function dislike(Post $post, EntityManagerInterface $entityManager): Response
+    #[Route('/dislike/{id}', name: 'app_post_unlike', methods: ['GET'])]
+    public function unlike(Post $post, EntityManagerInterface $entityManager): Response
     {
         $post->removeLike($this->getUser());
         $entityManager->persist($post);
