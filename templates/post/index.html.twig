@@ -3,34 +3,24 @@
 {% block title %}Post index{% endblock %}
 
 {% block body %}
-    <h1>Post index</h1>
+    <h1>Mi Red Social</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Text</th>
-                <th>Postdate</th>
-                <th>Img</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
         {% for post in posts %}
-            <tr>
-                <td>{{ post.id }}</td>
-                <td>{{ post.text }}</td>
-                <td>{{ post.postdate ? post.postdate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ post.img }}</td>
-                <td>
+        <div>
+                <p>{{ post.author.username }} ({{ post.postdate ? post.postdate|date('Y-m-d H:i:s') : '' }})</p>
+                <p>{{ post.text }}</p>
+                {% if post.img %}
+                <p><img src="{{ asset('img/' ~ post.img)}}" alt"{{post.img}}" width="200px"></p>
+                {% endif %}
+                <div>
+                    <a href="{{ path('app_post_like', {'id': post.id}) }}">❤️</a>
                     <a href="{{ path('app_post_show', {'id': post.id}) }}">show</a>
                     <a href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
-                </td>
-            </tr>
+                </div>
+        </div>
+        <hr>
         {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
+                <p colspan="5">no records found</p>
         {% endfor %}
         </tbody>
     </table>

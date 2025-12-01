@@ -6,8 +6,11 @@ use App\Entity\Post;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\File;
 
 class PostType extends AbstractType
 {
@@ -15,11 +18,17 @@ class PostType extends AbstractType
     {
         $builder
             ->add('text')
-            ->add('postdate')
-            ->add('img')
-            ->add('author', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
+            ->add('img', FileType::class, [
+                'label' => 'Image (jpg, png, gif)',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new File(
+                        maxSize: '2048k',
+                        mimeTypes: ['image/jpeg', "image/png", "image/gif", "image/jpg"],
+                        mimeTypesMessage: 'Please upload a valid image',
+                    )
+                ],
             ])
         ;
     }
