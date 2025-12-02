@@ -1,0 +1,138 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Story{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .story-container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: white;
+        border: 1px solid var(--instagram-border, #dbdbdb);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .story-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--instagram-border, #dbdbdb);
+    }
+
+    .story-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #f09433, #dc2743, #cc2366, #bc1888);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .story-author {
+        font-weight: 600;
+        color: #262626;
+        text-decoration: none;
+    }
+
+    .story-date {
+        font-size: 12px;
+        color: #8e8e8e;
+    }
+
+    .story-image {
+        width: 100%;
+        max-height: 600px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .story-content {
+        padding: 16px;
+    }
+
+    .story-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #262626;
+    }
+
+    .story-description {
+        font-size: 14px;
+        color: #262626;
+        line-height: 1.5;
+    }
+
+    .story-actions {
+        padding: 8px 16px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        border-top: 1px solid var(--instagram-border, #dbdbdb);
+    }
+
+    .btn {
+        padding: 6px 12px;
+        font-size: 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        color: white;
+    }
+
+    .btn-edit {
+        background-color: #0095f6;
+    }
+
+    .btn-back {
+        background-color: #262626;
+    }
+
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="story-container">
+
+    {# Header con autor y fecha #}
+    <div class="story-header">
+        <div class="story-avatar">
+            {{ story.user.userIdentifier|slice(0,1)|upper }}
+        </div>
+        <div>
+            <a href="{{ path('app_user_show', {'id': story.user.id}) }}" class="story-author">
+                {{ story.user.userIdentifier }}
+            </a>
+            <div class="story-date">
+                {{ story.createdAt ? story.createdAt|date('M d, Y H:i') : '' }}
+            </div>
+        </div>
+    </div>
+
+    {# Imagen de la historia #}
+    <img src="{{ asset('img/' ~ story.image) }}" alt="{{ story.title }}" class="story-image">
+
+    {# Contenido de la historia #}
+    <div class="story-content">
+        <div class="story-title">{{ story.title }}</div>
+        <div class="story-description">{{ story.description }}</div>
+    </div>
+
+    {# Acciones (editar, volver) #}
+    <div class="story-actions">
+        <a href="{{ path('app_post_index') }}" class="btn btn-back">Back to Feed</a>
+        {% if is_granted('ROLE_ADMIN') or (app.user is not null and app.user.id == story.user.id) %}
+            <a href="{{ path('app_story_edit', {'id': story.id}) }}" class="btn btn-edit">Edit</a>
+            {{ include('story/_delete_form.html.twig') }}
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

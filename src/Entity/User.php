@@ -49,7 +49,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $likes;
 
     /**
-     * Usuarios que siguen a este usuario.
+     * Usuarios que sigue el usuario
      *
      * @var Collection<int, self>
      */
@@ -57,7 +57,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $followers;
 
     /**
-     * Usuarios a los que este usuario sigue (lado propietario).
+     * Seguidores del usuario
      *
      * @var Collection<int, self>
      */
@@ -65,12 +65,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinTable(name: 'user_following')]
     private Collection $following;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $picture = null;
+
+    /**
+     * @var Collection<int, Story>
+     */
+    #[ORM\OneToMany(targetEntity: Story::class, mappedBy: 'user')]
+    private Collection $stories;
+
+    #[ORM\OneToMany(mappedBy: 'sender', targetEntity: Message::class)]
+    private Collection $sentMessages;
+
+    #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: Message::class)]
+    private Collection $receivedMessages;
+
+    #[ORM\Column]
+    private ?bool $is_privated = null;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->likes = new ArrayCollection();
         $this->followers = new ArrayCollection();
         $this->following = new ArrayCollection();
+        $this->stories = new ArrayCollection();
+        $this->sentMessages = new ArrayCollection();
+        $this->receivedMessages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -263,4 +284,71 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(?string $picture): static
+    {
+        $this->picture = $picture;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Story>
+     */
+    public function getStories(): Collection
+    {
+        return $this->stories;
+    }
+
+    public function addStory(Story $story): static
+    {
+        if (!$this->stories->contains($story)) {
+            $this->stories->add($story);
+            $story->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStory(Story $story): static
+    {
+        if ($this->stories->removeElement($story)) {
+            // set the owning side to null (unless already changed)
+            if ($story->getUser() === $this) {
+                $story->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /** @return Collection<int, Message> */
+    public function getSentMessages(): Collection
+    {
+        return $this->sentMessages;
+    }
+
+    /** @return Collection<int, Message> */
+    public function getReceivedMessages(): Collection
+    {
+        return $this->receivedMessages;
+    }
+
+    public function isPrivated(): ?bool
+    {
+        return $this->is_privated;
+    }
+
+    public function setIsPrivated(bool $is_privated): static
+    {
+        $this->is_privated = $is_privated;
+
+        return $this;
+    }
+
 }

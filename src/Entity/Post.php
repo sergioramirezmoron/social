@@ -34,6 +34,9 @@ class Post
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'likes')]
     private Collection $likes;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $deleted_at = null;
+
     public function __construct()
     {
         $this->likes = new ArrayCollection();
@@ -112,6 +115,18 @@ class Post
     public function removeLike(User $like): static
     {
         $this->likes->removeElement($like);
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deleted_at;
+    }
+
+    public function setDeletedAt(?\DateTime $deleted_at): static
+    {
+        $this->deleted_at = $deleted_at;
 
         return $this;
     }

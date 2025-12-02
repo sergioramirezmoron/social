@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Post;
 use App\Form\PostType;
 use App\Repository\PostRepository;
+use App\Repository\StoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,16 +14,25 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
-
+use App\Entity\User;
 #[Route('/post')]
 #[IsGranted('ROLE_USER')]
 final class PostController extends AbstractController
 {
     #[Route(name: 'app_post_index', methods: ['GET'])]
-    public function index(PostRepository $postRepository): Response
+    public function index(PostRepository $postRepository,StoryRepository $storyRepository): Response
     {
+        $user = $this->getUser();
+        $following = [];
+        if ($user instanceof User) {
+            $following = $user->getFollowing()->toArray();
+        }
+        
+        $stories = $storyRepository->findStoriesFromFollowing($following,$user);
+
         return $this->render('post/index.html.twig', [
             'posts' => $postRepository->findAll(),
+            'stories' => $stories,
         ]);
     }
 

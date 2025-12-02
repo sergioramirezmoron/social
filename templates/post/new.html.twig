@@ -1,11 +1,63 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Post{% endblock %}
+{% block title %}Crear Nueva Publicación{% endblock %}
 
 {% block body %}
-    <h1>Create new Post</h1>
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                
+                {# Tarjeta principal para el formulario #}
+                <div class="card shadow-lg border-0" style="border: 1px solid var(--instagram-border, #dbdbdb);">
+                    <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
+                        <h1 class="card-title fw-bold" style="color: #262626;">
+                            <i class="bi bi-plus-square-fill me-2" style="color: #0095f6;"></i> 
+                            Nueva Publicación
+                        </h1>
+                        <p class="text-muted small">Comparte tu momento con la comunidad.</p>
+                    </div>
 
-    {{ include('post/_form.html.twig') }}
+                    <div class="card-body p-4 p-md-5">
+                        
+                        {# --- INICIO DEL FORMULARIO --- #}
+                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            
+                            {# Campo de Texto (Text) #}
+                            <div class="mb-4">
+                                {{ form_label(form.text, 'Descripción', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                {{ form_widget(form.text, {'attr': {'class': 'form-control', 'placeholder': '¿Qué quieres compartir hoy?', 'rows': 4}}) }}
+                                <div class="form-text text-muted">Añade un texto atractivo a tu publicación.</div>
+                                {{ form_errors(form.text) }}
+                            </div>
 
-    <a href="{{ path('app_post_index') }}">back to list</a>
+                            {# Campo de Imagen (Img) #}
+                            <div class="mb-4">
+                                {{ form_label(form.img, 'Subir Imagen', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                {# El widget se muestra como 'file' #}
+                                {{ form_widget(form.img, {'attr': {'class': 'form-control', 'accept': 'image/* '}}) }}
+                                <div class="form-text text-muted">Selecciona una imagen relevante (máx. 5MB).</div>
+                                {{ form_errors(form.img) }}
+                            </div>
+
+                            {# Botón de Guardar #}
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg fw-bold" style="background-color: #0095f6; border: none;">
+                                    {{ button_label|default('Publicar') }} 
+                                </button>
+                            </div>
+                            
+                        {{ form_end(form) }}
+                        {# --- FIN DEL FORMULARIO --- #}
+
+                        <div class="text-center mt-4">
+                            <a href="{{ path('app_post_index') }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-arrow-left me-1"></i> Volver al Inicio
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
 {% endblock %}

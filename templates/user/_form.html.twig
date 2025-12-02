@@ -1,4 +1,18 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4 p-md-5">
+        
+        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+            {# Todos los campos del formulario #}
+            {{ form_widget(form) }}
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save me-2"></i> {{ button_label|default('Guardar Cambios') }}
+                </button>
+            </div>
+
+        {{ form_end(form) }}
+        
+    </div>
+</div>

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{{ parent() }}
+  {% for m in messages %}
+    {% if m.sender == app.user %}
+        <div class="message sent">
+            {{ m.content }}
+            <div style="font-size:11px; opacity:0.7; margin-top:3px; text-align:right;">
+                {{ m.createdAt|date('H:i') }}
+            </div>
+        </div>
+    {% else %}
+        <div class="message received">
+            {{ m.content }}
+            <div style="font-size:11px; opacity:0.7; margin-top:3px;">
+                {{ m.createdAt|date('H:i') }}
+            </div>
+        </div>
+    {% endif %}
+    {% endfor %}
+{% endblock %}

@@ -1,23 +1,68 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Followers{% endblock %}
+{% block title %}Seguidores de {{ user.username }}{% endblock %}
 
 {% block body %}
-    <h1>Followers de {{ user.username }}</h1>
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                
+                <div class="card shadow-sm border-0" style="border: 1px solid var(--instagram-border, #dbdbdb);">
+                    <div class="card-header bg-white border-bottom text-center">
+                        <h1 class="card-title fw-bold fs-4 mb-0" style="color: #262626;">
+                            <i class="bi bi-people-fill me-2" style="color: #0095f6;"></i> 
+                            Seguidores de **{{ user.username }}**
+                        </h1>
+                    </div>
 
-    <p>Total: {{ followers|length }}</p>
+                    <div class="card-body p-4">
+                        <p class="text-center text-muted fw-bold mb-4">
+                            Total de Seguidores: <span class="badge rounded-pill bg-primary ms-1" style="background-color: #0095f6 !important;">{{ followers|length }}</span>
+                        </p>
+                        
+                        <div class="list-group list-group-flush">
+                            {% for follower in followers %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center py-2 px-0" style="border-color: var(--instagram-border);">
+                                    
+                                    {# Información del Follower #}
+                                    <div class="d-flex align-items-center">
+                                        {# Avatar del Follower (Usando un avatar por defecto estilizado) #}
+                                        {% set followerAvatar = follower.picture ? asset('img/' ~ follower.picture) : asset('img/default-avatar.png') %}
+                                        <img 
+                                            src="{{ followerAvatar }}" 
+                                            alt="{{ follower.username }}" 
+                                            class="rounded-circle me-3" 
+                                            style="width: 40px; height: 40px; object-fit: cover; border: 1px solid #dbdbdb;"
+                                        >
 
-    <ul>
-        {% for follower in followers %}
-            <li>
-                <a href="{{ path('app_user_show', {'id': follower.id}) }}">{{ follower.username }}</a>
-            </li>
-        {% else %}
-            <li>No tiene followers todavía.</li>
-        {% endfor %}
-    </ul>
+                                        {# Nombre de Usuario #}
+                                        <a href="{{ path('app_user_show', {'id': follower.id}) }}" class="text-decoration-none fw-bold" style="color: #262626;">
+                                            {{ follower.username }}
+                                        </a>
+                                    </div>
 
-    <a href="{{ path('app_user_show', {'id': user.id}) }}">Volver al perfil</a>
+                                    {# Botón de acción (Ver Perfil) #}
+                                    <a href="{{ path('app_user_show', {'id': follower.id}) }}" class="btn btn-sm btn-outline-secondary">
+                                        Ver Perfil
+                                    </a>
+                                </div>
+                            {% else %}
+                                <p class="alert alert-info text-center mb-0">
+                                    <i class="bi bi-info-circle me-1"></i> **{{ user.username }}** aún no tiene seguidores.
+                                </p>
+                            {% endfor %}
+                        </div>
+
+                        {# Botón para volver al perfil #}
+                        <div class="text-center mt-4">
+                            <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-outline-primary fw-bold" style="border-color: #dbdbdb; color: #262626;">
+                                <i class="bi bi-arrow-left me-1"></i> Volver al perfil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
 {% endblock %}
-
-

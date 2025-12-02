@@ -1,40 +1,458 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Post index{% endblock %}
+{% block title %}Instagram Feed{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .post-card {
+        background: white;
+        border: 1px solid var(--instagram-border);
+        border-radius: 8px;
+        margin-bottom: 24px;
+        max-width: 600px;
+    }
+    
+    .post-header {
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .post-author {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    
+    .post-image {
+        width: 100%;
+        max-height: 600px;
+        object-fit: cover;
+    }
+    
+.post-actions {
+        padding: 8px 16px;
+        display: flex;
+        gap: 16px;
+    }
+    
+    /* Estilo base para todos los botones de acción (Like, Comment, Share) */
+    .post-actions .action-btn { 
+        background: none;
+        border: none;
+        padding: 8px;
+        font-size: 24px; /* Hace los íconos grandes */
+        cursor: pointer;
+        color: #262626; /* Color de ícono por defecto */
+        display: flex; /* Para alinear el ícono y el contador de likes */
+        align-items: center;
+        text-decoration: none; /* Asegura que no haya subrayado en los enlaces */
+    }
+    
+    .post-actions .action-btn:hover {
+        color: #8e8e8e;
+    }
+
+    /* Estilo específico para el botón de Like cuando el usuario ha dado Like */
+    .post-actions .like-btn.liked {
+        color: #ed4956; /* El color rojo de Instagram para el corazón lleno */
+    }
+    
+    /* El ícono de corazón lleno debe verse si está "liked" */
+    .post-actions .like-btn.liked .bi-heart-fill {
+        display: inline;
+    }
+
+    /* Ocultamos el ícono de corazón lleno por defecto */
+    .post-actions .like-btn .bi-heart-fill {
+        display: none;
+    }
+
+    /* Mostramos el ícono de corazón vacío por defecto */
+    .post-actions .like-btn .bi-heart {
+        display: inline;
+    }
+
+    /* Ocultamos el ícono de corazón vacío cuando está "liked" */
+    .post-actions .like-btn.liked .bi-heart {
+        display: none;
+    }
+    
+    .post-actions .like-count {
+        font-size: 14px;
+        font-weight: 600;
+        margin-left: 4px;
+        color: #262626;
+    }
+    
+    .post-content {
+        padding: 0 16px 16px;
+    }
+    
+    .post-text {
+        margin: 8px 0;
+        line-height: 1.5;
+    }
+    
+    .post-date {
+        font-size: 10px;
+        color: #8e8e8e;
+        text-transform: uppercase;
+        letter-spacing: 0.2px;
+        margin-top: 8px;
+    }
+    
+    .username {
+        font-weight: 600;
+        color: #262626;
+        text-decoration: none;
+    }
+    
+    .username:hover {
+        text-decoration: underline;
+    }
+    
+    .feed-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 30px 0;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border: 1px solid var(--instagram-border);
+        border-radius: 8px;
+    }
+    
+    .empty-state i {
+        font-size: 64px;
+        color: #8e8e8e;
+        margin-bottom: 20px;
+    }
+    
+    .create-post-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        color: white;
+        border: none;
+        font-size: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .create-post-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .btn-instagram { /* Clase personalizada para el botón de estado vacío */
+        background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+        color: white;
+        border: none;
+    }
+    .btn-follow-ig {
+    background: #0095f6; /* Azul Instagram */
+    color: white !important; /* Texto en blanco */
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.5; /* Ajuste fino */
+    text-decoration: none; /* Asegura que no tenga subrayado */
+    }
+
+    .btn-follow-ig:hover {
+        background: #1877f2; /* Azul ligeramente más oscuro al pasar el ratón */
+        color: white !important;
+    }
+
+    /* Estilo para el botón "Following" (Fondo blanco, borde sutil) */
+    .btn-following-ig {
+        background: white;
+        color: #262626 !important; /* Texto oscuro */
+        border: 1px solid var(--instagram-border, #dbdbdb); /* Borde sutil */
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        line-height: 1.5;
+        text-decoration: none;
+    }
+
+    .btn-following-ig:hover {
+        background: #fafafa; /* Fondo muy claro al pasar el ratón */
+        color: #262626 !important;
+    }
+
+    /* Asegurar que el nombre de usuario y el botón estén alineados */
+    .post-author > div {
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Espacio entre el nombre y el botón */
+    }
+
+
+
+    /* -------------------- */
+    /* HISTORIAS INSTAGRAM */
+    /* -------------------- */
+
+    .stories-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        padding: 12px 0;
+        margin-bottom: 20px;
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .stories-wrapper::-webkit-scrollbar {
+        display: none; /* Chrome */
+    }
+
+    .stories-scroll {
+        display: flex;
+        gap: 16px;
+        padding-left: 6px;
+    }
+
+    .story-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 70px;
+        text-decoration: none;
+        color: #262626;
+    }
+
+    .story-ring {
+        width: 66px;
+        height: 66px;
+        padding: 3px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #f09433, #dc2743, #cc2366, #bc1888);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .story-img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid white;
+    }
+
+    .story-username {
+        margin-top: 6px;
+        font-size: 12px;
+        text-align: center;
+        width: 70px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Historia propia con "+" */
+    .story-ring.own-story {
+        position: relative;
+        background: linear-gradient(45deg, #f09433, #dc2743, #cc2366, #bc1888);
+    }
+
+    .story-ring.own-story .plus-sign {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 18px;
+        height: 18px;
+        background: #0095f6;
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+    }
+
+
+
+    @media (max-width: 768px) {
+        .post-card {
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+        }
+        
+        .feed-container {
+            padding: 0;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-    <h1>Mi Red Social</h1>
+<div class="container">
+    <div class="feed-container">
+
+        {# HISTORIAS TIPO INSTAGRAM #}
+        <div class="stories-wrapper">
+            <div class="stories-scroll">
+
+                {# PRIMERA HISTORIA: TU PROPIA #}
+                <a href="{{ path('app_story_new') }}" class="story-item">
+                    <div class="story-ring own-story">
+                        <img src="{{ asset('img/' ~ app.user.picture ?: 'default-avatar.png') }}" 
+                            alt="Tu historia" class="story-img">
+                        <span class="plus-sign">+</span>
+                    </div>
+                    <span class="story-username">Tu historia</span>
+                </a>
+
+                {# HISTORIAS DE LA GENTE QUE SIGUES #}
+                {% for story in stories %}
+                    <a href="{{ path('app_story_show', {'id': story.id}) }}" class="story-item">
+                        <div class="story-ring">
+                            <img src="{{ asset('img/' ~ story.image) }}" alt="story" class="story-img">
+                        </div>
+                        <span class="story-username">
+                            {{ story.user.userIdentifier }}
+                        </span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
 
         {% for post in posts %}
-        <div>
-        {% if post.author is not same as app.user %}
-            {% if not post.author.getFollowers().contains(app.user) %}
-            <a href="{{ path('app_post_follow', {'id': post.author.id}) }}">Follow</a>
-            {% else %}
-            <a href="{{ path('app_post_unfollow', {'id': post.author.id}) }}">UnFollow</a>
-            {% endif %}
-        {% endif %}
-                <a href="{{ path('app_user_show', {'id': post.author.id})}}">{{ post.author.username }}</a>
-                <p>({{ post.postdate ? post.postdate|date('Y-m-d H:i:s') : '' }})</p>
-                <p>{{ post.text }}</p>
-                {% if post.img %}
-                <p><img src="{{ asset('img/' ~ post.img)}}" alt="{{post.img}}" width="200px"></p>
-                {% endif %}
-                <div>
-                {{ post.likes|length }}
-                {% if post.likes.contains(app.user) %}
-                    <a href="{{ path('app_post_unlike', {'id': post.id}) }}">❤️</a>
-                    {% else %}
-                    <a href="{{ path('app_post_like', {'id': post.id}) }}">🩶</a>
-                {% endif %}
-                    <a href="{{ path('app_post_show', {'id': post.id}) }}">show</a>
-                    <a href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
-                </div>
-        </div>
-        <hr>
-        {% else %}
-                <p colspan="5">no records found</p>
-        {% endfor %}
+        {% if not post.deletedAt %}
+        {% set userLiked = post.likes|filter(u => u == app.user)|length > 0 %}
+        {# Verificar si el usuario actual ya sigue al autor del post #}
+        {% set isFollowing = post.author.followers|filter(f => f == app.user)|length > 0 %}
+        
+        {# NUEVA LÓGICA DE PRIVACIDAD #}
+        {# Verificar si el post puede ser visto:
+        - Si es ADMIN, puede verlo todo
+        - Si es el propio usuario, siempre puede verlo
+        - Si la cuenta NO es privada, todos pueden verlo
+        - Si la cuenta ES privada, solo los seguidores pueden verlo #}
+        {% set isAdmin = 'ROLE_ADMIN' in app.user.roles %}
+        {% set canViewPost = isAdmin or
+                            (post.author.id == app.user.id) or 
+                            (not post.author.isPrivated) or 
+                            (post.author.isPrivated and isFollowing) %}
+        
+        {% if canViewPost %}
+            <div class="post-card">
+                {# Header con autor y fecha #}
+                <div class="post-header">
+                    <div class="post-author d-flex align-items-center gap-2">
+                        {# Avatar como enlace para seguir al autor #}
+                        <a href="{{ path('app_user_show', {'id': post.author.id}) }}" class="avatar-link">
+                            <div class="avatar">
+                                {{ post.author ? post.author.userIdentifier|slice(0, 1)|upper : 'A' }}
+                            </div>
+                        </a>
 
-    <a href="{{ path('app_post_new') }}">Create new</a>
+                        {# Nombre de usuario como enlace #}
+                        <div>
+                            <a href="{{ path('app_user_show', {'id': post.author.id}) }}" class="username">
+                                {{ post.author ? post.author.userIdentifier : 'Anonymous' }}
+                            </a>
+                        </div>
+
+                        {# Botón Follow/Unfollow dinámico #}
+                        {% if post.author.id != app.user.id %}
+                            <a href="{{ isFollowing 
+                                        ? path('app_user_unfollow', {'id': post.author.id}) 
+                                        : path('app_user_follow', {'id': post.author.id}) }}" 
+                                class="btn btn-sm ms-2 fw-bold {{ isFollowing ? 'btn-following-ig' : 'btn-follow-ig' }}">
+                                <i class="bi {{ isFollowing ? '' : '' }}"></i> 
+                                {{ isFollowing ? 'Following' : 'Follow' }}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# Imagen del post #}
+                {% if post.img %}
+                    <img src="{{ asset('img/' ~ post.img) }}" class="post-image" alt="Post image">
+                {% endif %}
+                
+                {# Acciones (like, comment, share) #}
+                <div class="post-actions d-flex align-items-center gap-2">
+                {# Botón de Like con estilo condicional y ruta dinámica #}
+                    <a href="{{ userLiked 
+                                ? path('app_post_unlike', {'id': post.id}) 
+                                : path('app_post_like', {'id': post.id}) }}" 
+                    class="action-btn like-btn {{ userLiked ? 'liked' : '' }}" 
+                    title="{{ userLiked ? 'Unlike' : 'Like' }}">
+                        {# Corazón vacío y lleno #}
+                        <i class="bi bi-heart"></i>
+                        <i class="bi bi-heart-fill"></i>
+                        {# Contador de Likes #}
+                        <span class="like-count">{{ post.likes|length }}</span>
+                    </a>
+                    {# Botón de Compartir #}
+                    <a href="#" class="action-btn" title="Share">
+                        <i class="bi bi-send"></i>
+                    </a>
+                </div>
+
+                {# Contenido del post #}
+                <div class="post-content">
+                    <div class="post-text">
+                        <span class="username">{{ post.author ? post.author.userIdentifier : 'Anonymous' }}</span>
+                        {{ post.text }}
+                    </div>
+                    <div class="post-date">
+                        {{ post.postDate ? post.postDate|date('M d, Y') : '' }}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <i class="bi bi-camera"></i>
+                <h3>No posts yet</h3>
+                <p class="text-muted">Share your first photo to get started!</p>
+                <a href="{{ path('app_post_new') }}" class="btn btn-instagram mt-3">
+                    <i class="bi bi-plus-lg"></i> Create Your First Post
+                </a>
+            </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+{# Botón flotante para crear post (solo si hay posts) #}
+{% if posts|length > 0 %}
+    <a href="{{ path('app_post_new') }}" class="create-post-btn d-none d-md-flex" title="Create new post">
+        <i class="bi bi-plus-lg"></i>
+    </a>
+{% endif %}
 {% endblock %}

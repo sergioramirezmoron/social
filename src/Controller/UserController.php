@@ -10,11 +10,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/user')]
+#[isGranted('ROLE_USER')]
 final class UserController extends AbstractController
 {
     #[Route(name: 'app_user_index', methods: ['GET'])]
+    #[isGranted('ROLE_ADMIN')]
     public function index(UserRepository $userRepository): Response
     {
         return $this->render('user/index.html.twig', [
@@ -69,15 +74,34 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, User $user, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imgFile = $form->get('picture')->getData();
+
+        if ($imgFile) {
+
+            $directory = $this->getParameter('img_directory');
+
+            // generar nombre seguro
+            $originalFilename = pathinfo($imgFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = $slugger->slug($originalFilename);
+            $newFilename = $safeFilename . '-' . uniqid() . '.' . $imgFile->guessExtension();
+
+            try {
+                $imgFile->move($directory, $newFilename);
+            } catch (FileException $e) {
+            }
+
+            // cambiar en la entidad User
+            $user->setPicture($newFilename);
+        }
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_user_show', ['id' => $user->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('user/edit.html.twig', [
@@ -97,7 +121,7 @@ final class UserController extends AbstractController
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/follow/{id}', name: 'app_post_follow', methods: ['GET'])]
+    #[Route('/follow/{id}', name: 'app_user_follow', methods: ['GET'])]
     public function follow(User $user, EntityManagerInterface $entityManager): Response
     {
         $currentUser = $this->getUser();
@@ -113,7 +137,7 @@ final class UserController extends AbstractController
         return $this->redirectToRoute('app_post_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/unfollow/{id}', name: 'app_post_unfollow', methods: ['GET'])]
+    #[Route('/unfollow/{id}', name: 'app_user_unfollow', methods: ['GET'])]
     public function unfollow(User $user, EntityManagerInterface $entityManager): Response
     {
         $currentUser = $this->getUser();

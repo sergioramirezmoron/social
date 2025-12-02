@@ -11,6 +11,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 
 class RegistrationFormType extends AbstractType
 {
@@ -18,11 +20,23 @@ class RegistrationFormType extends AbstractType
     {
         $builder
             ->add('username')
+            ->add('picture', FileType::class, [
+                'label' => 'Image (jpg, png, gif)',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new File(
+                        maxSize: '2048k',
+                        mimeTypes: ['image/*'],
+                        mimeTypesMessage: 'Introduzca una imagen válida',
+                    )
+                ],
+            ])
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
                     new IsTrue([
-                        'message' => 'You should agree to our terms.',
+                        'message' => 'Debes aceptar nuestros términos.',
                     ]),
                 ],
             ])
@@ -43,6 +57,7 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
+
         ;
     }
 
