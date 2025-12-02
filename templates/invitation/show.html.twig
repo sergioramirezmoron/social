@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Invitation{% endblock %}
+
+{% block body %}
+    <h1>Invitation</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>From</th>
+                <td>{{ invitation.user.username }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex gap-2">
+        <a href="{{ path('app_invitation_accept', {'id': invitation.id}) }}" class="btn btn-success">
+            <i class="bi bi-check-circle"></i> Accept
+        </a>
+
+        <a href="{{ path('app_invitation_reject', {'id': invitation.id}) }}" class="btn btn-danger">
+            <i class="bi bi-x-circle"></i> Reject
+        </a>
+
+        <a href="{{ path('app_invitation_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Back to list
+        </a>
+    </div>
+
+    {# Solo si eres admin o el usuario propietario, mostrar editar y eliminar #}
+    {% if is_granted('ROLE_ADMIN') or app.user.id == invitation.user.id %}
+        <div class="mt-2">
+            <a href="{{ path('app_invitation_edit', {'id': invitation.id}) }}" class="btn btn-primary">Edit</a>
+            {{ include('invitation/_delete_form.html.twig') }}
+        </div>
+    {% endif %}
+{% endblock %}

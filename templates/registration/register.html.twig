@@ -1,23 +1,173 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Registrarse | Instagram Style{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --instagram-blue: #0095f6;
+            --instagram-text-dark: #262626;
+            --instagram-border: #dbdbdb;
+            --instagram-background: #fafafa;
+        }
+
+        body {
+            background-color: var(--instagram-background);
+        }
+
+        .register-container {
+            max-width: 350px;
+            margin: 30px auto;
+            padding: 0;
+        }
+
+        .instagram-card {
+            border: 1px solid var(--instagram-border);
+            border-radius: 1px;
+            background-color: #fff;
+            padding: 40px;
+            margin-bottom: 10px;
+        }
+
+        .ig-title {
+            font-size: 52px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-control-ig {
+            background-color: #fafafa;
+            border: 1px solid var(--instagram-border);
+            border-radius: 3px;
+            padding: 9px 8px;
+            font-size: 14px;
+            line-height: 18px;
+            margin-bottom: 6px;
+        }
+
+        .form-control-ig:focus {
+            background-color: #fff;
+            border-color: #a8a8a8;
+            box-shadow: none;
+        }
+
+        .btn-blue-ig {
+            background-color: var(--instagram-blue);
+            border: 1px solid var(--instagram-blue);
+            color: #fff;
+            font-weight: 600;
+            padding: 7px 16px;
+            font-size: 14px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-blue-ig:hover {
+            background-color: #0084e5;
+            border-color: #0084e5;
+            color: #fff;
+        }
+        
+        .form-row-ig label {
+            display: none; 
+        }
+
+        .custom-control-ig {
+            font-size: 13px;
+            text-align: center;
+            color: #8e8e8e;
+            margin-top: 15px;
+        }
+
+        .login-link-card {
+            text-align: center;
+            padding: 20px 0;
+            font-size: 14px;
+        }
+
+        .login-link-card a {
+            color: var(--instagram-blue);
+            font-weight: 600;
+            text-decoration: none;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+    <div class="register-container">
+        
+        <div class="instagram-card">
+            
+            <h1 class="ig-title">
+                <i class="bi bi-person-plus-fill me-2"></i> 
+                Instagram
+            </h1>
+            
+            <h2 class="h6 text-muted text-center mb-4">Regístrate para ver fotos y vídeos de tus amigos.</h2>
 
-    {{ form_errors(registrationForm) }}
+            {{ form_start(registrationForm) }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+                {% if form_errors(registrationForm) %}
+                    <div class="alert alert-danger small text-center">{{ form_errors(registrationForm) }}</div>
+                {% endif %}
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+                <div class="form-row-ig mb-2">
+                    {{ form_widget(registrationForm.username, {
+                        attr: {
+                            class: 'form-control form-control-ig',
+                            placeholder: 'Nombre de usuario',
+                            'aria-label': 'Nombre de usuario'
+                        }
+                    }) }}
+                    <div class="text-danger small">{{ form_errors(registrationForm.username) }}</div>
+                </div>
 
-    <div class="mt-3">
-        <a class="btn btn-secondary" href="{{ path('app_login') }}">Ir a Login</a>
+                <div class="form-row-ig mb-2">
+                    {{ form_widget(registrationForm.plainPassword, {
+                        label: false,
+                        attr: {
+                            class: 'form-control form-control-ig',
+                            placeholder: 'Contraseña',
+                            'aria-label': 'Contraseña'
+                        }
+                    }) }}
+                    <div class="text-danger small">{{ form_errors(registrationForm.plainPassword) }}</div>
+                </div>
+
+                <div class="form-row-ig mb-2">
+                    {{ form_widget(registrationForm.picture, {
+                        label: false,
+                        attr: {
+                            class: 'form-control form-control-ig',
+                            placeholder: 'Selecciona una imagen'
+                        }
+                    }) }}
+                    <div class="text-danger small">{{ form_errors(registrationForm.picture) }}</div>
+                </div>
+
+                <div class="custom-control-ig">
+                    <label>
+                        {{ form_widget(registrationForm.agreeTerms) }} 
+                        Acepto los <a href="#" class="text-muted">Términos</a> y <a href="#" class="text-muted">Políticas</a>.
+                    </label>
+                    <div class="text-danger small">{{ form_errors(registrationForm.agreeTerms) }}</div>
+                </div>
+
+                {# CSRF token obligatorio si render_rest es false #}
+                {{ form_row(registrationForm._token) }}
+
+                <button type="submit" class="btn btn-blue-ig mt-3">
+                    Registrarse
+                </button>
+            
+            {{ form_end(registrationForm, {'render_rest': false}) }}
+            
+        </div>
+
+        <div class="instagram-card login-link-card">
+            ¿Tienes una cuenta? 
+            <a href="{{ path('app_login') }}">Iniciar Sesión</a>
+        </div>
     </div>
 {% endblock %}

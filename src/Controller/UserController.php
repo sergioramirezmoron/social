@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Invitation;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
@@ -19,7 +20,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class UserController extends AbstractController
 {
     #[Route(name: 'app_user_index', methods: ['GET'])]
-    #[isGranted('ROLE_ADMIN')]
     public function index(UserRepository $userRepository): Response
     {
         return $this->render('user/index.html.twig', [
@@ -122,7 +122,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('/follow/{id}', name: 'app_user_follow', methods: ['GET'])]
-    public function follow(User $user, EntityManagerInterface $entityManager): Response
+    public function follow(User $user,EntityManagerInterface $entityManager): Response
     {
         $currentUser = $this->getUser();
 
@@ -130,12 +130,20 @@ final class UserController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $currentUser->addFollowing($user);
+        if ($user->isPrivated()) {
+            // Redirige a la creación de invitación
+            return $this->redirectToRoute('app_invitation_new', [
+                'id' => $user->getId()
+            ]);
+        } else {
+            // Si no es privado, sigue directamente
+            $currentUser->addFollowing($user);
+            $entityManager->flush();
 
-        $entityManager->flush();
-
-        return $this->redirectToRoute('app_post_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_post_index', [], Response::HTTP_SEE_OTHER);
+        }
     }
+
 
     #[Route('/unfollow/{id}', name: 'app_user_unfollow', methods: ['GET'])]
     public function unfollow(User $user, EntityManagerInterface $entityManager): Response

@@ -13,6 +13,21 @@
         max-width: 600px;
     }
     
+    /* Indicador de repost */
+    .repost-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #17bf63;
+        font-size: 0.875rem;
+        padding: 8px 16px;
+        border-bottom: 1px solid #efefef;
+    }
+
+    .repost-indicator i {
+        font-size: 1rem;
+    }
+    
     .post-header {
         padding: 14px 16px;
         display: flex;
@@ -45,50 +60,46 @@
         object-fit: cover;
     }
     
-.post-actions {
+    .post-actions {
         padding: 8px 16px;
         display: flex;
         gap: 16px;
     }
     
-    /* Estilo base para todos los botones de acción (Like, Comment, Share) */
     .post-actions .action-btn { 
         background: none;
         border: none;
         padding: 8px;
-        font-size: 24px; /* Hace los íconos grandes */
+        font-size: 24px;
         cursor: pointer;
-        color: #262626; /* Color de ícono por defecto */
-        display: flex; /* Para alinear el ícono y el contador de likes */
+        color: #262626;
+        display: flex;
         align-items: center;
-        text-decoration: none; /* Asegura que no haya subrayado en los enlaces */
+        text-decoration: none;
+        transition: all 0.3s ease;
     }
     
     .post-actions .action-btn:hover {
         color: #8e8e8e;
     }
 
-    /* Estilo específico para el botón de Like cuando el usuario ha dado Like */
+    /* Estilos del botón de Like */
     .post-actions .like-btn.liked {
-        color: #ed4956; /* El color rojo de Instagram para el corazón lleno */
+        color: #ed4956;
     }
     
-    /* El ícono de corazón lleno debe verse si está "liked" */
     .post-actions .like-btn.liked .bi-heart-fill {
         display: inline;
     }
 
-    /* Ocultamos el ícono de corazón lleno por defecto */
     .post-actions .like-btn .bi-heart-fill {
         display: none;
     }
 
-    /* Mostramos el ícono de corazón vacío por defecto */
     .post-actions .like-btn .bi-heart {
         display: inline;
     }
 
-    /* Ocultamos el ícono de corazón vacío cuando está "liked" */
     .post-actions .like-btn.liked .bi-heart {
         display: none;
     }
@@ -98,6 +109,36 @@
         font-weight: 600;
         margin-left: 4px;
         color: #262626;
+    }
+
+    /* Estilos del botón de Repost */
+    .repost-btn i {
+        transition: all 0.3s ease;
+    }
+
+    .repost-btn:hover i {
+        color: #17bf63;
+        transform: rotate(180deg);
+    }
+
+    .repost-btn.reposted i {
+        color: #17bf63;
+    }
+
+    .repost-btn.reposted:hover i {
+        color: #dc3545;
+        transform: rotate(-180deg);
+    }
+
+    .repost-count {
+        margin-left: 0.25rem;
+        font-size: 14px;
+        font-weight: 600;
+        color: #262626;
+    }
+
+    .repost-btn.reposted .repost-count {
+        color: #17bf63;
     }
     
     .post-content {
@@ -170,32 +211,32 @@
         transform: scale(1.1);
     }
 
-    .btn-instagram { /* Clase personalizada para el botón de estado vacío */
+    .btn-instagram {
         background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
         color: white;
         border: none;
     }
+    
     .btn-follow-ig {
-    background: #0095f6; /* Azul Instagram */
-    color: white !important; /* Texto en blanco */
-    border: none;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    line-height: 1.5; /* Ajuste fino */
-    text-decoration: none; /* Asegura que no tenga subrayado */
+        background: #0095f6;
+        color: white !important;
+        border: none;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        line-height: 1.5;
+        text-decoration: none;
     }
 
     .btn-follow-ig:hover {
-        background: #1877f2; /* Azul ligeramente más oscuro al pasar el ratón */
+        background: #1877f2;
         color: white !important;
     }
 
-    /* Estilo para el botón "Following" (Fondo blanco, borde sutil) */
     .btn-following-ig {
         background: white;
-        color: #262626 !important; /* Texto oscuro */
-        border: 1px solid var(--instagram-border, #dbdbdb); /* Borde sutil */
+        color: #262626 !important;
+        border: 1px solid var(--instagram-border, #dbdbdb);
         padding: 4px 12px;
         border-radius: 4px;
         font-size: 12px;
@@ -204,33 +245,27 @@
     }
 
     .btn-following-ig:hover {
-        background: #fafafa; /* Fondo muy claro al pasar el ratón */
+        background: #fafafa;
         color: #262626 !important;
     }
 
-    /* Asegurar que el nombre de usuario y el botón estén alineados */
     .post-author > div {
         display: flex;
         align-items: center;
-        gap: 8px; /* Espacio entre el nombre y el botón */
+        gap: 8px;
     }
 
-
-
-    /* -------------------- */
     /* HISTORIAS INSTAGRAM */
-    /* -------------------- */
-
     .stories-wrapper {
         width: 100%;
         overflow-x: auto;
         padding: 12px 0;
         margin-bottom: 20px;
-        scrollbar-width: none; /* Firefox */
+        scrollbar-width: none;
     }
 
     .stories-wrapper::-webkit-scrollbar {
-        display: none; /* Chrome */
+        display: none;
     }
 
     .stories-scroll {
@@ -277,7 +312,6 @@
         text-overflow: ellipsis;
     }
 
-    /* Historia propia con "+" */
     .story-ring.own-story {
         position: relative;
         background: linear-gradient(45deg, #f09433, #dc2743, #cc2366, #bc1888);
@@ -300,8 +334,6 @@
         border: 2px solid white;
     }
 
-
-
     @media (max-width: 768px) {
         .post-card {
             border-radius: 0;
@@ -323,8 +355,6 @@
         {# HISTORIAS TIPO INSTAGRAM #}
         <div class="stories-wrapper">
             <div class="stories-scroll">
-
-                {# PRIMERA HISTORIA: TU PROPIA #}
                 <a href="{{ path('app_story_new') }}" class="story-item">
                     <div class="story-ring own-story">
                         <img src="{{ asset('img/' ~ app.user.picture ?: 'default-avatar.png') }}" 
@@ -334,8 +364,8 @@
                     <span class="story-username">Tu historia</span>
                 </a>
 
-                {# HISTORIAS DE LA GENTE QUE SIGUES #}
                 {% for story in stories %}
+                {% if story.getExpiresAt > "now"|date %}
                     <a href="{{ path('app_story_show', {'id': story.id}) }}" class="story-item">
                         <div class="story-ring">
                             <img src="{{ asset('img/' ~ story.image) }}" alt="story" class="story-img">
@@ -344,98 +374,30 @@
                             {{ story.user.userIdentifier }}
                         </span>
                     </a>
+                {% endif %}
                 {% endfor %}
             </div>
         </div>
 
+        {# Verificar si hay posts visibles #}
+        {% set hasVisiblePosts = false %}
         {% for post in posts %}
-        {% if not post.deletedAt %}
-        {% set userLiked = post.likes|filter(u => u == app.user)|length > 0 %}
-        {# Verificar si el usuario actual ya sigue al autor del post #}
-        {% set isFollowing = post.author.followers|filter(f => f == app.user)|length > 0 %}
-        
-        {# NUEVA LÓGICA DE PRIVACIDAD #}
-        {# Verificar si el post puede ser visto:
-        - Si es ADMIN, puede verlo todo
-        - Si es el propio usuario, siempre puede verlo
-        - Si la cuenta NO es privada, todos pueden verlo
-        - Si la cuenta ES privada, solo los seguidores pueden verlo #}
-        {% set isAdmin = 'ROLE_ADMIN' in app.user.roles %}
-        {% set canViewPost = isAdmin or
-                            (post.author.id == app.user.id) or 
-                            (not post.author.isPrivated) or 
-                            (post.author.isPrivated and isFollowing) %}
-        
-        {% if canViewPost %}
-            <div class="post-card">
-                {# Header con autor y fecha #}
-                <div class="post-header">
-                    <div class="post-author d-flex align-items-center gap-2">
-                        {# Avatar como enlace para seguir al autor #}
-                        <a href="{{ path('app_user_show', {'id': post.author.id}) }}" class="avatar-link">
-                            <div class="avatar">
-                                {{ post.author ? post.author.userIdentifier|slice(0, 1)|upper : 'A' }}
-                            </div>
-                        </a>
-
-                        {# Nombre de usuario como enlace #}
-                        <div>
-                            <a href="{{ path('app_user_show', {'id': post.author.id}) }}" class="username">
-                                {{ post.author ? post.author.userIdentifier : 'Anonymous' }}
-                            </a>
-                        </div>
-
-                        {# Botón Follow/Unfollow dinámico #}
-                        {% if post.author.id != app.user.id %}
-                            <a href="{{ isFollowing 
-                                        ? path('app_user_unfollow', {'id': post.author.id}) 
-                                        : path('app_user_follow', {'id': post.author.id}) }}" 
-                                class="btn btn-sm ms-2 fw-bold {{ isFollowing ? 'btn-following-ig' : 'btn-follow-ig' }}">
-                                <i class="bi {{ isFollowing ? '' : '' }}"></i> 
-                                {{ isFollowing ? 'Following' : 'Follow' }}
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
-
-                {# Imagen del post #}
-                {% if post.img %}
-                    <img src="{{ asset('img/' ~ post.img) }}" class="post-image" alt="Post image">
+            {% if not post.deletedAt %}
+                {% set displayPost = post.isRetweet ? post.originalPost : post %}
+                {% set isFollowing = displayPost.author.followers|filter(f => f == app.user)|length > 0 %}
+                {% set isAdmin = 'ROLE_ADMIN' in app.user.roles %}
+                {% set canViewPost = isAdmin or
+                                    (displayPost.author.id == app.user.id) or 
+                                    (not displayPost.author.isPrivated) or 
+                                    (displayPost.author.isPrivated and isFollowing) %}
+                {% if canViewPost %}
+                    {% set hasVisiblePosts = true %}
                 {% endif %}
-                
-                {# Acciones (like, comment, share) #}
-                <div class="post-actions d-flex align-items-center gap-2">
-                {# Botón de Like con estilo condicional y ruta dinámica #}
-                    <a href="{{ userLiked 
-                                ? path('app_post_unlike', {'id': post.id}) 
-                                : path('app_post_like', {'id': post.id}) }}" 
-                    class="action-btn like-btn {{ userLiked ? 'liked' : '' }}" 
-                    title="{{ userLiked ? 'Unlike' : 'Like' }}">
-                        {# Corazón vacío y lleno #}
-                        <i class="bi bi-heart"></i>
-                        <i class="bi bi-heart-fill"></i>
-                        {# Contador de Likes #}
-                        <span class="like-count">{{ post.likes|length }}</span>
-                    </a>
-                    {# Botón de Compartir #}
-                    <a href="#" class="action-btn" title="Share">
-                        <i class="bi bi-send"></i>
-                    </a>
-                </div>
+            {% endif %}
+        {% endfor %}
 
-                {# Contenido del post #}
-                <div class="post-content">
-                    <div class="post-text">
-                        <span class="username">{{ post.author ? post.author.userIdentifier : 'Anonymous' }}</span>
-                        {{ post.text }}
-                    </div>
-                    <div class="post-date">
-                        {{ post.postDate ? post.postDate|date('M d, Y') : '' }}
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-        {% else %}
+        {# Mostrar mensaje vacío solo si no hay posts visibles #}
+        {% if not hasVisiblePosts %}
             <div class="empty-state">
                 <i class="bi bi-camera"></i>
                 <h3>No posts yet</h3>
@@ -444,15 +406,116 @@
                     <i class="bi bi-plus-lg"></i> Create Your First Post
                 </a>
             </div>
+        {% else %}
+            {# Mostrar posts #}
+            {% for post in posts %}
+            {% if not post.deletedAt %}
+            
+            {# Determinar el post que se va a mostrar (original o repost) #}
+            {% set displayPost = post.isRetweet ? post.originalPost : post %}
+            {% set originalPostId = displayPost.id %}
+            
+            {# Verificar si el usuario ha dado like y reposteado #}
+            {% set userLiked = displayPost.likes|filter(u => u == app.user)|length > 0 %}
+            {% set userReposted = originalPostId in userReposts %}
+            
+            {# Verificar si el usuario actual ya sigue al autor del post ORIGINAL #}
+            {% set isFollowing = displayPost.author.followers|filter(f => f == app.user)|length > 0 %}
+            
+            {# LÓGICA DE PRIVACIDAD #}
+            {% set isAdmin = 'ROLE_ADMIN' in app.user.roles %}
+            {% set canViewPost = isAdmin or
+                                (displayPost.author.id == app.user.id) or 
+                                (not displayPost.author.isPrivated) or 
+                                (displayPost.author.isPrivated and isFollowing) %}
+            
+            {% if canViewPost %}
+                <div class="post-card">
+                    {# Indicador de repost #}
+                    {% if post.isRetweet %}
+                        <div class="repost-indicator">
+                            <i class="bi bi-repeat"></i>
+                            <span><strong>{{ post.author.userIdentifier }}</strong> reposteó</span>
+                        </div>
+                    {% endif %}
+                    
+                    {# Header con autor ORIGINAL y fecha #}
+                    <div class="post-header">
+                        <div class="post-author d-flex align-items-center gap-2">
+                            <a href="{{ path('app_user_show', {'id': displayPost.author.id}) }}" class="avatar-link">
+                                <div class="avatar">
+                                    {{ displayPost.author.userIdentifier|slice(0, 1)|upper }}
+                                </div>
+                            </a>
+
+                            <div>
+                                <a href="{{ path('app_user_show', {'id': displayPost.author.id}) }}" class="username">
+                                    {{ displayPost.author.userIdentifier }}
+                                </a>
+                            </div>
+
+                            {# Botón Follow/Unfollow dinámico #}
+                            {% if displayPost.author.id != app.user.id %}
+                                <a href="{{ isFollowing 
+                                            ? path('app_user_unfollow', {'id': displayPost.author.id}) 
+                                            : path('app_user_follow', {'id': displayPost.author.id}) }}" 
+                                    class="btn btn-sm ms-2 fw-bold {{ isFollowing ? 'btn-following-ig' : 'btn-follow-ig' }}">
+                                    {{ isFollowing ? 'Following' : 'Follow' }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {# Imagen del post ORIGINAL #}
+                    {% if displayPost.img %}
+                        <img src="{{ asset('img/' ~ displayPost.img) }}" class="post-image" alt="Post image">
+                    {% endif %}
+                    
+                    {# Acciones (like, repost, share) #}
+                    <div class="post-actions">
+                        {# Botón de Like - CORREGIDO: usa displayPost.id #}
+                        <a href="{{ userLiked 
+                                    ? path('app_post_unlike', {'id': displayPost.id}) 
+                                    : path('app_post_like', {'id': displayPost.id}) }}" 
+                        class="action-btn like-btn {{ userLiked ? 'liked' : '' }}" 
+                        title="{{ userLiked ? 'Unlike' : 'Like' }}">
+                            <i class="bi bi-heart"></i>
+                            <i class="bi bi-heart-fill"></i>
+                            <span class="like-count">{{ displayPost.likes|length }}</span>
+                        </a>
+
+                        {# Botón de Repost - UN SOLO BOTÓN #}
+                        <a href="{{ userReposted 
+                                    ? path('app_post_unrepost', {'id': post.id}) 
+                                    : path('app_post_repost', {'id': post.id}) }}" 
+                        class="action-btn repost-btn {{ userReposted ? 'reposted' : '' }}" 
+                        title="{{ userReposted ? 'Unrepost' : 'Repost' }}">
+                            <i class="bi bi-repeat"></i>
+                            <span class="repost-count">{{ displayPost.retweets|length }}</span>
+                        </a>
+
+                    </div>
+                    
+                    {# Contenido del post ORIGINAL #}
+                    <div class="post-content">
+                        <div class="post-text">
+                            <span class="username">{{ displayPost.author.userIdentifier }}</span>
+                            {{ displayPost.text }}
+                        </div>
+                        <div class="post-date">
+                            {{ displayPost.postDate ? displayPost.postDate|date('M d, Y') : '' }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
         {% endif %}
-        {% endfor %}
     </div>
 </div>
 
-{# Botón flotante para crear post (solo si hay posts) #}
-{% if posts|length > 0 %}
-    <a href="{{ path('app_post_new') }}" class="create-post-btn d-none d-md-flex" title="Create new post">
-        <i class="bi bi-plus-lg"></i>
-    </a>
-{% endif %}
+{# Botón flotante para crear post #}
+<a href="{{ path('app_post_new') }}" class="create-post-btn d-none d-md-flex" title="Create new post">
+    <i class="bi bi-plus-lg"></i>
+</a>
 {% endblock %}

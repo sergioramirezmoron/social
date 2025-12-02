@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 final class StoryController extends AbstractController
 {
     #[Route(name: 'app_story_index', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function index(StoryRepository $storyRepository): Response
     {
         return $this->render('story/index.html.twig', [
@@ -36,6 +37,7 @@ final class StoryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            
             $imgFile = $form->get('image')->getData();
 
         if ($imgFile) {
@@ -58,7 +60,7 @@ final class StoryController extends AbstractController
             $story->setDel(false);
             $story->setCreatedAt(new \DateTime());
             $story->setUser($this->getUser());
-
+            $story->setExpiresAt((new \DateTime())->modify('+24 hours'));
 
             $entityManager->persist($story);
             $entityManager->flush();

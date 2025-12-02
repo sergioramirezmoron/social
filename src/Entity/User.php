@@ -83,6 +83,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $is_privated = null;
 
+    /**
+     * @var Collection<int, Invitation>
+     */
+    #[ORM\OneToMany(targetEntity: Invitation::class, mappedBy: 'invitated')]
+    private Collection $invitations;
+
+    
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -92,6 +100,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->stories = new ArrayCollection();
         $this->sentMessages = new ArrayCollection();
         $this->receivedMessages = new ArrayCollection();
+        $this->invitations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -127,7 +136,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -196,7 +204,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removePost(Post $post): static
     {
         if ($this->posts->removeElement($post)) {
-            // set the owning side to null (unless already changed)
             if ($post->getAuthor() === $this) {
                 $post->setAuthor(null);
             }
@@ -318,7 +325,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeStory(Story $story): static
     {
         if ($this->stories->removeElement($story)) {
-            // set the owning side to null (unless already changed)
             if ($story->getUser() === $this) {
                 $story->setUser(null);
             }
@@ -351,4 +357,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Invitation>
+     */
+    public function getInvitations(): Collection
+    {
+        return $this->invitations;
+    }
+
+    public function addInvitation(Invitation $invitation): static
+    {
+        if (!$this->invitations->contains($invitation)) {
+            $this->invitations->add($invitation);
+            $invitation->setInvitated($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvitation(Invitation $invitation): static
+    {
+        if ($this->invitations->removeElement($invitation)) {
+            if ($invitation->getInvitated() === $this) {
+                $invitation->setInvitated(null);
+            }
+        }
+
+        return $this;
+    }
 }

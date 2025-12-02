@@ -37,9 +37,24 @@ class Post
     #[ORM\Column(nullable: true)]
     private ?\DateTime $deleted_at = null;
 
+    /**
+     * Post original que fue retuiteado (si este post es un retweet)
+     */
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'retweets')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    private ?Post $originalPost = null;
+
+    /**
+     * Posts que son retweets de este post
+     * @var Collection<int, Post>
+     */
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'originalPost')]
+    private Collection $retweets;
+
     public function __construct()
     {
         $this->likes = new ArrayCollection();
+        $this->retweets = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,5 +144,54 @@ class Post
         $this->deleted_at = $deleted_at;
 
         return $this;
+    }
+
+    public function getOriginalPost(): ?Post
+    {
+        return $this->originalPost;
+    }
+
+    public function setOriginalPost(?Post $originalPost): static
+    {
+        $this->originalPost = $originalPost;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Post>
+     */
+    public function getRetweets(): Collection
+    {
+        return $this->retweets;
+    }
+
+    public function addRetweet(Post $retweet): static
+    {
+        if (!$this->retweets->contains($retweet)) {
+            $this->retweets->add($retweet);
+            $retweet->setOriginalPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRetweet(Post $retweet): static
+    {
+        if ($this->retweets->removeElement($retweet)) {
+            if ($retweet->getOriginalPost() === $this) {
+                $retweet->setOriginalPost(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Verifica si este post es un retweet
+     */
+    public function isRetweet(): bool
+    {
+        return $this->originalPost !== null;
     }
 }

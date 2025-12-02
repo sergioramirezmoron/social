@@ -15,12 +15,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Entity\User;
+use App\Entity\Invitation;
+
 #[Route('/post')]
 #[IsGranted('ROLE_USER')]
 final class PostController extends AbstractController
 {
     #[Route(name: 'app_post_index', methods: ['GET'])]
-    public function index(PostRepository $postRepository,StoryRepository $storyRepository): Response
+    public function index(PostRepository $postRepository, StoryRepository $storyRepository): Response
     {
         $user = $this->getUser();
         $following = [];
@@ -28,11 +30,33 @@ final class PostController extends AbstractController
             $following = $user->getFollowing()->toArray();
         }
         
-        $stories = $storyRepository->findStoriesFromFollowing($following,$user);
+        $stories = $storyRepository->findStoriesFromFollowing($following, $user);
+        $posts = $postRepository->findBy([], ['postdate' => 'DESC']);
+        
+        // Crear array de IDs de posts originales que el usuario ha reposteado
+        $userReposts = [];
+        if ($user instanceof User) {
+            foreach ($posts as $post) {
+                // Determinar el post original
+                $originalPost = $post->isRetweet() ? $post->getOriginalPost() : $post;
+                
+                // Verificar si el usuario ha reposteado este post original
+                $hasReposted = $postRepository->findOneBy([
+                    'author' => $user,
+                    'originalPost' => $originalPost,
+                    'deleted_at' => null
+                ]);
+                
+                if ($hasReposted) {
+                    $userReposts[] = $originalPost->getId();
+                }
+            }
+        }
 
         return $this->render('post/index.html.twig', [
-            'posts' => $postRepository->findAll(),
+            'posts' => $posts,
             'stories' => $stories,
+            'userReposts' => $userReposts,
         ]);
     }
 
@@ -131,5 +155,101 @@ final class PostController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute('app_post_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/repost/{id}', name: 'app_post_repost', methods: ['GET'])]
+    public function repost(Post $post, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        
+        // Verificar que el usuario esté autenticado
+        if (!$user) {
+            $this->addFlash('error', 'Debes iniciar sesión para hacer repost');
+            return $this->redirectToRoute('app_login');
+        }
+        
+        // Verificar que el post no esté eliminado
+        if ($post->getDeletedAt() !== null) {
+            $this->addFlash('error', 'No puedes hacer repost de un post eliminado');
+            return $this->redirectToRoute('app_post_index');
+        }
+        
+        // Determinar el post original (por si es un retweet de un retweet)
+        $originalPost = $post->isRetweet() ? $post->getOriginalPost() : $post;
+        
+        // Verificar que el usuario no sea el autor del post original
+        if ($originalPost->getAuthor() === $user) {
+            $this->addFlash('error', 'No puedes hacer repost de tu propio post');
+            return $this->redirectToRoute('app_post_index');
+        }
+        
+        // Verificar si el usuario ya hizo repost de este post
+        $existingRepost = $entityManager->getRepository(Post::class)->findOneBy([
+            'author' => $user,
+            'originalPost' => $originalPost
+        ]);
+        
+        if ($existingRepost && $existingRepost->getDeletedAt() === null) {
+            $this->addFlash('info', 'Ya has hecho repost de este post');
+            return $this->redirectToRoute('app_post_index');
+        }
+        
+        // Si existe pero está eliminado, restaurarlo
+        if ($existingRepost && $existingRepost->getDeletedAt() !== null) {
+            $existingRepost->setDeletedAt(null);
+            $existingRepost->setPostdate(new \DateTime());
+        } else {
+            // Crear nuevo repost
+            $repost = new Post();
+            $repost->setAuthor($user);
+            $repost->setOriginalPost($originalPost);
+            $repost->setPostdate(new \DateTime());
+            // El texto e imagen serán null porque es un repost
+            
+            $entityManager->persist($repost);
+        }
+        
+        $entityManager->flush();
+        
+        $this->addFlash('success', 'Repost realizado correctamente');
+        return $this->redirectToRoute('app_post_index');
+    }
+
+    #[Route('/unrepost/{id}', name: 'app_post_unrepost', methods: ['GET'])]
+    public function unrepost(Post $post, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        
+        // Verificar que el usuario esté autenticado
+        if (!$user) {
+            $this->addFlash('error', 'Debes iniciar sesión');
+            return $this->redirectToRoute('app_login');
+        }
+        
+        // Determinar el post original
+        $originalPost = $post->isRetweet() ? $post->getOriginalPost() : $post;
+        
+        // Buscar el repost del usuario
+        $userRepost = $entityManager->getRepository(Post::class)->findOneBy([
+            'author' => $user,
+            'originalPost' => $originalPost,
+            'deleted_at' => null
+        ]);
+        
+        if (!$userRepost) {
+            $this->addFlash('error', 'No has hecho repost de este post');
+            return $this->redirectToRoute('app_post_index');
+        }
+        
+        // Marcar como eliminado (soft delete)
+        $userRepost->setDeletedAt(new \DateTime());
+        
+        // O si prefieres eliminar definitivamente:
+        // $entityManager->remove($userRepost);
+        
+        $entityManager->flush();
+        
+        $this->addFlash('success', 'Repost eliminado correctamente');
+        return $this->redirectToRoute('app_post_index');
     }
 }

@@ -48,6 +48,10 @@
                 background-color: #1877f2;
                 color: white;
             }
+
+            .img-hover:hover {
+                 box-shadow: 0 0 10px rgba(0,0,0,0.4);
+            }
         </style>
         {% endblock %}
 
@@ -67,13 +71,18 @@
                     <a href="{{ path('app_post_new') }}" class="btn btn-sm btn-instagram">
                         <i class="bi bi-plus-square"></i> New Post
                     </a>
-                    {# ESTILO APLICADO AQUÍ #}
-                    <a href="{{ path('chat_list') }}" class="btn btn-sm btn-outline-dark me-2" style="border: none; font-size: 1.5rem; padding: 0;">
+                    <a href="{{ path('app_user_index') }}" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
+                        <i class="bi bi-search"></i>
+                    </a>
+                    <a href="{{ path('chat_list') }}" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
                         <i class="bi bi-chat-dots"></i> 
+                    </a>
+                    <a href="{{ path('app_invitation_index') }}" class="btn btn-sm btn-outline-warning">
+                        <i class="bi bi-envelope"></i> Notificaciones
                     </a>
                     <span class="text-muted">
                         <a href="{{ path('app_user_show', {'id': app.user.id})}}" class="text-decoration-none" style="color: #262626;">
-                            <i class="bi bi-person-circle"></i> Perfil – **{{ app.user.userIdentifier }}**
+                            <img src="{{ asset('img/' ~ app.user.picture) }}" alt="{{ app.user.username }}" width="50px" style="border-radius: 50%;" class="img-hover">
                         </a>
                     </span>
                     <a href="{{ path('app_logout') }}" class="btn btn-sm btn-outline-secondary">

@@ -2,15 +2,120 @@
 
 {% block body %}
 {{ parent() }}
-  <h2>Elige con quién chatear</h2>
 
-  <ul>
-      {% for user in users %}
-          <li>
-              <a href="{{ path('chat', { id: user.id }) }}">
-                  {{ user.username }}
-              </a>
-          </li>
-      {% endfor %}
-  </ul>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+
+            <div class="card shadow-sm border-0"
+                style="border: 1px solid var(--instagram-border, #dbdbdb); background-color: #ffffff;">
+                
+                <div class="card-header bg-white border-bottom text-center">
+                    <h1 class="card-title fw-bold fs-4 mb-0" style="color: var(--instagram-text-dark, #262626);">
+                        <i class="bi bi-chat-dots-fill me-2" style="color: var(--instagram-blue, #0095f6);"></i>
+                        Mensajes
+                    </h1>
+                    <p class="text-muted small mb-0">Elige con quién chatear</p>
+                </div>
+
+                <div class="card-body p-0">
+
+                    <style>
+                        :root {
+                            --instagram-blue: #0095f6;
+                            --instagram-text-dark: #262626;
+                            --instagram-border: #dbdbdb;
+                            --instagram-background: #fafafa;
+                        }
+
+                        .chat-list {
+                            list-style: none;
+                            padding: 0;
+                            margin: 0;
+                        }
+
+                        .chat-item {
+                            border-bottom: 1px solid var(--instagram-border, #dbdbdb);
+                        }
+
+                        .chat-item a {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            text-decoration: none;
+                            padding: 12px 16px;
+                            transition: background 0.15s ease-in-out;
+                            color: var(--instagram-text-dark, #262626);
+                            background-color: #ffffff;
+                        }
+
+                        .chat-item a:hover {
+                            background-color: #fafafa;
+                        }
+
+                        .chat-left {
+                            display: flex;
+                            align-items: center;
+                        }
+
+                        .chat-avatar {
+                            width: 52px;
+                            height: 52px;
+                            border-radius: 50%;
+                            margin-right: 12px;
+                            object-fit: cover;
+                            border: 1px solid var(--instagram-border, #dbdbdb);
+                        }
+
+                        .chat-info {
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                        }
+
+                        .chat-username {
+                            font-weight: 600;
+                            font-size: 15px;
+                            color: var(--instagram-text-dark, #262626);
+                        }
+
+                        .chat-right {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-end;
+                            font-size: 12px;
+                            color: #888;
+                        }
+
+                        .chat-unread {
+                            width: 9px;
+                            height: 9px;
+                            background-color: var(--instagram-blue, #0095f6);
+                            border-radius: 50%;
+                            margin-top: 5px;
+                        }
+                    </style>
+
+                    <ul class="chat-list">
+                        {% for user in users %}
+                            <li class="chat-item">
+                                <a href="{{ path('chat', { id: user.id }) }}">
+                                    <div class="chat-left">
+                                        <img src="{{ asset('img/' ~ user.picture ?: 'default-avatar.png') }}" alt="{{ user.username }}" class="chat-avatar">
+                                        <div class="chat-info">
+                                            <span class="chat-username">{{ user.username }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 {% endblock %}

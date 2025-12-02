@@ -1,39 +1,120 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User index{% endblock %}
+{% block title %}Índice de Usuarios (Admin){% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# ESTILOS DE INSTAGRAM PARA LOS BOTONES (Añadir a tu archivo CSS principal) #}
+    <style>
+        .btn-follow-ig {
+            background-color: #0095f6;
+            color: #fff;
+            border: 1px solid #0095f6;
+            transition: background-color 0.1s;
+        }
+        .btn-follow-ig:hover {
+            background-color: #0084e5; /* Un poco más oscuro */
+            color: #fff;
+        }
+        
+        .btn-following-ig {
+            background-color: #fff;
+            color: #262626;
+            border: 1px solid var(--instagram-border, #dbdbdb);
+            transition: background-color 0.1s;
+        }
+        .btn-following-ig:hover {
+            background-color: #f5f5f5; /* Un toque de gris */
+            color: #262626;
+        }
+
+        /* Opcional: Color de texto y borde de la app */
+        :root {
+            --instagram-blue: #0095f6;
+            --instagram-text-dark: #262626;
+            --instagram-border: #dbdbdb;
+            --instagram-background: #fafafa;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <h1>User index</h1>
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                
+                <div class="card shadow-sm border-0" style="border: 1px solid var(--instagram-border, #dbdbdb); background-color: #ffffff;">
+                    <div class="card-header bg-white border-bottom text-center">
+                        <h1 class="card-title fw-bold fs-4 mb-0" style="color: var(--instagram-text-dark, #262626);">
+                            <i class="bi bi-people-fill me-2" style="color: var(--instagram-blue, #0095f6);"></i> 
+                            Índice de Usuarios
+                        </h1>
+                        <p class="text-muted small mb-0">Gestión de cuentas registradas</p>
+                    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Username</th>
-                <th>Roles</th>
-                <th>Password</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.username }}</td>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-                <td>{{ user.password }}</td>
-                <td>
-                    <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
-                    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                    <div class="card-body p-4 table-responsive">
+                        <table class="table align-middle mb-0" style="font-size: 14px;">
+                            <thead style="border-bottom: 1px solid var(--instagram-border, #dbdbdb);">
+                                <tr>
+                                    <th scope="col" class="fw-bold text-center py-2" style="width: 60px;">Foto</th>
+                                    <th scope="col" class="fw-bold py-2">Username</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                {% set avatarUrl = user.picture ? asset('img/' ~ user.picture) : asset('img/default-avatar.png') %}
 
-    <a href="{{ path('app_user_new') }}">Create new</a>
+                                    <tr style="border-bottom: 1px solid var(--instagram-border, #dbdbdb);">
+                                        <td class="text-center py-3">
+                                            <img src="{{ avatarUrl }}" 
+                                                alt="{{ user.username }}" 
+                                                class="rounded-circle" 
+                                                style="width:40px; height:40px; object-fit:cover;">
+
+                                            </td>
+                                        <td class="py-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="fw-bold" style="color: var(--instagram-text-dark, #262626);">
+                                                    {{ user.username }}
+                                                </div>
+
+                                                {% set isOwnProfile = app.user and app.user.id == user.id %}
+                                                {% set isFollowing = app.user and user in app.user.following %}
+
+                                                {% if not isOwnProfile and app.user %}
+                                                    {% if isFollowing %}
+                                                        {# Ya sigues al usuario → Unfollow #}
+                                                        <a href="{{ path('app_user_unfollow', {'id': user.id}) }}" 
+                                                        class="btn btn-sm fw-bold btn-following-ig"
+                                                        style="width: 100px; font-size: 14px;">
+                                                            Following
+                                                        </a>
+                                                    {% else %}
+                                                        {# Cuenta privada o pública → Follow / Enviar solicitud #}
+                                                        <a href="{{ path('app_user_follow', {'id': user.id}) }}" 
+                                                        class="btn btn-sm fw-bold btn-follow-ig"
+                                                        style="width: 100px; font-size: 14px;">
+                                                            {{ user.isPrivated ? 'Enviar solicitud' : 'Follow' }}
+                                                        </a>
+                                                    {% endif %}
+                                                {% endif %}
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="2" class="text-center py-5 text-muted">
+                                            <i class="bi bi-exclamation-circle me-1"></i> No se encontraron registros de usuarios.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
 {% endblock %}
